@@ -1,0 +1,13 @@
+server:
+  port: 8004
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/orders?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: bundo
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
