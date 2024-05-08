@@ -2,18 +2,20 @@ package com.bundosRace.order.domain.dto.request;
 
 import com.bundosRace.order.domain.entity.Order;
 
+import java.time.LocalDate;
+
 public record CreateOrderDTO(
-        String address,
         long totalPrice,
         int orderAmount,
-        String requestList
+        String deliveryMemo,
+        LocalDate createAt
 ) {
     public Order toEntity() {
         return Order.builder()
-                .address(address)
                 .totalPrice(totalPrice)
                 .orderAmount(orderAmount)
-                .requestList(requestList)
+                .deliveryMemo(deliveryMemo)
+                .createAt(createAt)
                 .build();
     }
 }

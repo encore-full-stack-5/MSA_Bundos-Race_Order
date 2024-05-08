@@ -11,3 +11,7 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+
+#jwt:
+#  secret: asdmkajo2o1j3irerh3989gfsjfihisf
+#  expiration: 259200000

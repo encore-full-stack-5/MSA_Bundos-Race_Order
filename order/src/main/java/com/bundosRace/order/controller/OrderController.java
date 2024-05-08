@@ -18,18 +18,26 @@ public class OrderController {
         return "Hello World";
     }
 
+
+
     @PostMapping("/create")
-    public void saveOrder(@RequestBody CreateOrderDTO req) {
+    public void saveOrder(
+            @RequestBody CreateOrderDTO req
+    ) {
         orderService.createOrder(req);
     }
 
     @PutMapping("/update/{id}")
-    public void updateOrder(@PathVariable("id") Long id, @RequestBody UpdateOrderDTO req) {
+    public void updateOrder(
+            @PathVariable("id") Long id,
+            @RequestBody UpdateOrderDTO req) {
         orderService.updateOrder(id, req);
     }
 
     @DeleteMapping("delete/{id}")
-    public void deleteOrder(@PathVariable("id") Long id) {
+    public void deleteOrder(
+            @PathVariable("id") Long id
+    ) {
         orderService.deleteOrder(id);
     }
 }

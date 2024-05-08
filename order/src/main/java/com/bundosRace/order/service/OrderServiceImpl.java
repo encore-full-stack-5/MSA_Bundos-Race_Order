@@ -5,8 +5,11 @@ import com.bundosRace.order.domain.dto.request.UpdateOrderDTO;
 import com.bundosRace.order.domain.dto.response.ReadOrderDTO;
 import com.bundosRace.order.domain.entity.Order;
 import com.bundosRace.order.domain.repository.OrderRepository;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     public void updateOrder(Long id, UpdateOrderDTO req) {
         Optional<Order> byId = orderRepository.findById(id);
         Order order = byId.orElseThrow(IllegalArgumentException::new);
-        orderRepository.save(req.from());
+        orderRepository.save(req.update(order));
     }
 
     @Override
