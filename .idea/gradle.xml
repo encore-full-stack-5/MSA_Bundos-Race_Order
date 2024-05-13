@@ -12,6 +12,24 @@
           </set>
         </option>
       </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../Spring-Boot_TeamAir_AirbnbClone_BE/eureka" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../Spring-Boot_TeamAir_AirbnbClone_BE/eureka" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../Spring-Boot_TeamAir_AirbnbClone_BE/gateway" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../Spring-Boot_TeamAir_AirbnbClone_BE/gateway" />
+          </set>
+        </option>
+      </GradleProjectSettings>
     </option>
   </component>
 </project>

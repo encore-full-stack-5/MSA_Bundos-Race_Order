@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity @Getter @Builder
 @AllArgsConstructor
@@ -16,10 +17,9 @@ public class Order {
 
     @Column(name = "TOTAL_PRICE", nullable = false)
     @Setter
-    private Long totalPrice;
+    private int totalPrice;
 
     @Column(name = "ORDERS_AMOUNT", nullable = false)
-    @Setter
     private int orderAmount;
 
     @Column(name = "DELIVERY_MEMO")
@@ -33,6 +33,9 @@ public class Order {
     @Setter
     private LocalDate updateAt;
 
-    @Column(name = "ORDER_EXIST")
-    private int orderExist;
+    @Column(name = "USER_ID")
+    private UUID userId;
+
+    @Column(name = "PRODUCE_ID")
+    private Long productId;
 }
