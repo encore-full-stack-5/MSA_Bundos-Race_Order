@@ -2,12 +2,14 @@ package com.bundosRace.order.domain.dto.request;
 
 import com.bundosRace.order.domain.entity.Order;
 
+import java.time.LocalDate;
+
 public record UpdateOrderDTO(
-        String requestList, long totalPrice, int orderAmount
+        String deliveryMemo
 ) {
-    public Order from() {
-        return Order.builder()
-                .requestList(requestList)
-                .build();
+    public Order update(Order order) {
+        order.setDeliveryMemo(deliveryMemo);
+        order.setUpdateAt(LocalDate.now());
+        return order;
     }
 }

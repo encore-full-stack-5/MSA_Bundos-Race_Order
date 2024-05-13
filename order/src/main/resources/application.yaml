@@ -11,3 +11,20 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://192.168.0.16:8761/eureka/
+  instance:
+    instance-id: order-service
+    prefer-ip-address: true
+    ip-address: 192.168.0.29
+
+
+
+jwt:
+  secret: fdag32fdsavv32few89vbbafdsbaugubdsag8904fdsafdvcxcbrea
+  expiration: 86400000

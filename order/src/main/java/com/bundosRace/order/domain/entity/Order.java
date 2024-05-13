@@ -2,36 +2,40 @@ package com.bundosRace.order.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity @Getter @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "PRODUCT_ORDER")
 public class Order {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String address;
-
     @Column(name = "TOTAL_PRICE", nullable = false)
-    private Long totalPrice;
+    @Setter
+    private int totalPrice;
 
-    @Column(name = "ORDER_AMOUNT", nullable = false)
+    @Column(name = "ORDERS_AMOUNT", nullable = false)
     private int orderAmount;
 
-    @Column(name = "CREATE_AT")
+    @Column(name = "DELIVERY_MEMO")
+    @Setter
+    private String deliveryMemo;
+
+    @Column(name = "CREATE_AT", nullable = false)
     private LocalDate createAt;
 
-    @Column(name = "REQUEST_LIST")
-    @CreationTimestamp
-    private String requestList;
+    @Column(name = "UPDATE_AT")
+    @Setter
+    private LocalDate updateAt;
 
-    @Column(name = "order_exist")
-    @ColumnDefault("false")
-    private boolean orderExist;
+    @Column(name = "USER_ID")
+    private UUID userId;
+
+    @Column(name = "PRODUCE_ID")
+    private Long productId;
 }
