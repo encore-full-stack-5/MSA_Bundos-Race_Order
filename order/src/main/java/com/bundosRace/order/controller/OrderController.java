@@ -26,16 +26,6 @@ public class OrderController {
         return "Hello World";
     }
 
-    @PostMapping("/price")
-    public int price(@RequestBody CreateOrderRequest req) {
-        return orderService.productTotalPrice(req);
-    }
-
-    @PostMapping("/asd")
-    public SellProductsRequest sellProductsRequest(@RequestBody CreateOrderRequest req) {
-        return orderService.sellProductsRequests(req);
-    }
-
     @PostMapping("/user")
     public String token(
             @RequestBody User user
@@ -51,27 +41,27 @@ public class OrderController {
     public List<ReadOrderDTO> getAllOrder(
             @RequestHeader("Authorization") String userInfoToken
     ) {
-        String token = userInfoToken.substring(4);
+        String token = userInfoToken.substring(7);
         TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
         return orderService.getAllOrderToUser(tokenInfo);
     }
 
-    @GetMapping("user/order/{id}")
-    public ReadOrderDTO findOneOrderFromUser(
-            @PathVariable("id") Long id,
-            @RequestHeader("Authorization") String userInfoToken
-    ) {
-        String token = userInfoToken.substring(4);
-        TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
-        return orderService.getOneOrderFromUser(tokenInfo, id);
-    }
+//    @GetMapping("user/order/{id}")
+//    public ReadOrderDTO findOneOrderFromUser(
+//            @PathVariable("id") Long id,
+//            @RequestHeader("Authorization") String userInfoToken
+//    ) {
+//        String token = userInfoToken.substring(7);
+//        TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
+//        return orderService.getOneOrderFromUser(tokenInfo, id);
+//    }
 
     @PostMapping("/create")
     public void saveOrder(
             @RequestBody CreateOrderRequest req,
             @RequestHeader("Authorization") String userInfoToken
     ) {
-        String token = userInfoToken.substring(4);
+        String token = userInfoToken.substring(7);
         TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
         orderService.createOrder(tokenInfo, req);
     }
@@ -82,7 +72,7 @@ public class OrderController {
             @RequestBody UpdateOrderDTO req,
             @RequestHeader("Authorization") String userInfoToken
     ) {
-        String token = userInfoToken.substring(4);
+        String token = userInfoToken.substring(7);
         TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
         orderService.updateOrder(tokenInfo, id, req);
     }

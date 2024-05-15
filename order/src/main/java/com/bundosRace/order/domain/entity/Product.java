@@ -1,5 +1,6 @@
 package com.bundosRace.order.domain.entity;
 
+import com.bundosRace.order.config.utils.JsonStringListConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,29 +13,26 @@ import java.util.List;
 @Builder
 @Table(name = "PRODUCTS")
 public class Product {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     @Column(name = "PRODUCT_ID")
     private Long id;
 
-    @Column(name = "PRODUCT_TITLE")
-    private String name;
+    @Column(name = "PRODUCT_NAME")
+    private String productName;
 
-//    @Column(name = "images", columnDefinition = "jsonb")
-//    @Convert(converter = JsonStringListConverter.class)
-//    private List<String> images;
+    @Column(name = "images", columnDefinition = "json")
+    @Convert(converter = JsonStringListConverter.class)
+    private List<String> images;
 
-    @Column(name = "PRODUCT_PRICE")
-    private Long price;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "SELLER_ID")
+    private Seller seller;
 
-    @Column(name = "PRODUCT_AMOUNT")
-    private int amount;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @Column(name = "OPTION_ID")
+    private List<Option> options;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OptionGroup> optionGroups = new ArrayList<>();
-
-    public void addOptionGroup(OptionGroup optionGroup) {
-        this.optionGroups.add(optionGroup);
-        optionGroup.setProduct(this);
-    }
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "ORDER_ID")
+    private Order order;
 }

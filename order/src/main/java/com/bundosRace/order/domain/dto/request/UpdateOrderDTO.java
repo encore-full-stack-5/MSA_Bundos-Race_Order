@@ -9,7 +9,6 @@ public record UpdateOrderDTO(
 ) {
     public Order update(Order order) {
         order.setDeliveryMemo(deliveryMemo);
-        order.setUpdateAt(LocalDate.now());
         return order;
     }
 }

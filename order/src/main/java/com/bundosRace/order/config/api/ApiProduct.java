@@ -20,9 +20,4 @@ public class ApiProduct {
             ResponseEntity.noContent();
         }
     }
-
-    @Async
-    public Object getProductsByUserId(long productId) {
-        return feignProduct.getProductsByUserId(productId);
-    }
 }

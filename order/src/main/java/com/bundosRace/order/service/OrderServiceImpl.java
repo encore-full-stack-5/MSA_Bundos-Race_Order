@@ -4,91 +4,52 @@ import com.bundosRace.order.config.api.ApiProduct;
 import com.bundosRace.order.config.utils.TokenInfo;
 import com.bundosRace.order.domain.dto.request.*;
 import com.bundosRace.order.domain.dto.response.ReadOrderDTO;
+import com.bundosRace.order.domain.dto.request.KafkaStatus;
 import com.bundosRace.order.domain.entity.Order;
-import com.bundosRace.order.domain.repository.OrderRepository;
+import com.bundosRace.order.domain.entity.Product;
+import com.bundosRace.order.domain.repository.*;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
+    private final OptionRepository optionRepository;
+    private final SellerRepository sellerRepository;
     private final ApiProduct apiProduct;
 
 
     @Override
     @Transactional()
+    @ResponseStatus(HttpStatus.CREATED)
     public synchronized void createOrder(TokenInfo tokenInfo, CreateOrderRequest req) {
-        List<Order> order = orderRepository.findAllByUserId(tokenInfo.id());
-        if(!order.isEmpty() || req == null)
+        if(tokenInfo.id() == null || req == null)
             throw new IllegalArgumentException();
 
-        int totalPrice = productTotalPrice(req);
-
-        SellProductsRequest sellProductsRequest = sellProductsRequests(req);
-        apiProduct.updateSellProduct(sellProductsRequest);
-
-        orderRepository.save(Order.builder()
-                        .totalPrice(totalPrice)
-                        .orderAmount(req.amount())
-                        .createAt(LocalDate.now())
-                        .userId(tokenInfo.id())
-                        .productId(req.id())
-                        .build()
-        );
-    }
-
-    public SellProductsRequest sellProductsRequests(CreateOrderRequest req) {
-        List<SellProduct> sellProducts = new ArrayList<>();
-        List<Long> optionsId = new ArrayList<>();
-        req.optionGroups().forEach(optionGroup -> {
-            optionGroup.options().forEach(option -> {
-                optionsId.add(option.id());
-            });
-        });
-        SellProduct products = new SellProduct(req.id(), req.amount(), optionsId);
-        sellProducts.add(products);
-        return new SellProductsRequest(sellProducts);
-    }
-
-    public int productTotalPrice(CreateOrderRequest req) {
-        AtomicInteger totalPrice = new AtomicInteger();
-        req.optionGroups().forEach(optionRequest -> {
-            optionRequest.options().forEach(option -> {
-                totalPrice.addAndGet(option.price());
-            });
-        });
-        totalPrice.addAndGet(req.price());
-
-        return Integer.parseInt(String.valueOf(totalPrice));
+        orderRepository.save(req.orderDTO(tokenInfo.id()));
+        sellerRepository.save(req.seller());
+        Product product = productRepository.save(req.product(tokenInfo.id()));
+        optionRepository.saveAll(req.option(product));
     }
 
     @Override
     public List<ReadOrderDTO> getAllOrderToUser(TokenInfo tokenInfo) {
-        List<Order> allOrderToUser = orderRepository.findAllByUserId(tokenInfo.id());
-        if(tokenInfo.id() == null || allOrderToUser.isEmpty()) throw new IllegalArgumentException();
-        allOrderToUser.forEach(productInfo -> {
-            apiProduct.getProductsByUserId(productInfo.getProductId());
-        });
 
-        return allOrderToUser.stream()
-                .map(ReadOrderDTO::getOrder)
-                .toList();
-    }
+        List<Order> orderFromUser = orderRepository.findAllByUserId(tokenInfo.id());
 
-    @Override
-    public ReadOrderDTO getOneOrderFromUser(TokenInfo tokenInfo, Long id) {
-        if(tokenInfo.id() == null) throw new IllegalArgumentException();
-        Optional<Order> exist = orderRepository.findById(id);
-        Order order = exist.orElseThrow(IllegalArgumentException::new);
-        return ReadOrderDTO.getOrder(order);
+        if(tokenInfo.id() == null || orderFromUser.isEmpty()) throw new IllegalArgumentException();
+
+        return orderFromUser.stream().map(ReadOrderDTO::readOrderDTO
+        ).collect(Collectors.toList());
     }
 
     @Override
@@ -105,5 +66,15 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> byId = orderRepository.findById(id);
         Order order = byId.orElseThrow(IllegalArgumentException::new);
         orderRepository.delete(order);
+    }
+
+    @Override
+    public void listenReview(KafkaStatus<KafkaRequest> status) {
+        List<Order> orders = orderRepository.findAllByProductsId(status.data().productId());
+        orders.stream().map(order -> {
+            if(!order.getReviewCheck())
+                order.setReviewCheck(status.data().check());
+            return Response.ok("성공!");
+        });
     }
 }
