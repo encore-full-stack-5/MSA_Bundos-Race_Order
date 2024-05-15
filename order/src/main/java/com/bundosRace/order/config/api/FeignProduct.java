@@ -11,9 +11,4 @@ public interface FeignProduct {
     void updateSellProductOrder(
             @RequestBody SellProductsRequest sellProductsRequest
     );
-
-    @GetMapping("api/v1/products/{id}")
-    Object getProductsByUserId(
-            @PathVariable Long productId
-    );
 }

@@ -2,8 +2,11 @@ package com.bundosRace.order.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity @Getter @Builder
@@ -13,6 +16,7 @@ import java.util.UUID;
 public class Order {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ORDER_ID")
     private Long id;
 
     @Column(name = "TOTAL_PRICE", nullable = false)
@@ -26,16 +30,17 @@ public class Order {
     @Setter
     private String deliveryMemo;
 
+    @Column(name = "REVIEW_CHECK")
+    @ColumnDefault("false")
+    @Setter
+    private Boolean reviewCheck;
+
     @Column(name = "CREATE_AT", nullable = false)
     private LocalDate createAt;
-
-    @Column(name = "UPDATE_AT")
-    @Setter
-    private LocalDate updateAt;
 
     @Column(name = "USER_ID")
     private UUID userId;
 
-    @Column(name = "PRODUCE_ID")
-    private Long productId;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Product> products;
 }
