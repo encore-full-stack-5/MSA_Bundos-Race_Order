@@ -11,6 +11,7 @@ import com.bundosRace.order.domain.repository.*;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,11 +36,30 @@ public class OrderServiceImpl implements OrderService {
         if(tokenInfo.id() == null || req == null)
             throw new IllegalArgumentException();
 
+        SellProduct sellProduct = new SellProduct(req.productId(), req.amount(), readOptionId(req.options()));
+        List<SellProduct> sellProductsRequest = sellProducts(sellProduct);
+        apiProduct.updateSellProduct(sellProductsRequest);
+
         orderRepository.save(req.orderDTO(tokenInfo.id()));
         sellerRepository.save(req.seller());
         Product product = productRepository.save(req.product(tokenInfo.id()));
         optionRepository.saveAll(req.option(product));
     }
+
+    public List<Long> readOptionId(List<CreateOptionRequest> options) {
+        List<Long> optionIds = new ArrayList<>();
+        options.stream().map(option -> optionIds.add(option.optionId()));
+
+        return optionIds;
+    }
+
+    public List<SellProduct> sellProducts(SellProduct sellProduct) {
+        List<SellProduct> sellProductList = new ArrayList<>();
+        sellProductList.add(sellProduct);
+        return sellProductList;
+    }
+
+    public
 
     @Override
     public List<ReadOrderDTO> getAllOrderToUser(TokenInfo tokenInfo) {
@@ -69,6 +89,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @KafkaListener(topics = "review")
     public void listenReview(KafkaStatus<KafkaRequest> status) {
         List<Order> orders = orderRepository.findAllByProductsId(status.data().productId());
         orders.stream().map(order -> {
