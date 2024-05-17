@@ -1,7 +1,5 @@
 package com.bundosRace.order.service;
 
-import com.bundosRace.order.config.utils.JwtTokenUtils;
-import com.bundosRace.order.config.utils.TokenInfo;
 import com.bundosRace.order.domain.dto.request.CreateOrderRequest;
 import com.bundosRace.order.domain.dto.request.UpdateOrderDTO;
 import com.bundosRace.order.domain.dto.response.ReadOrderDTO;

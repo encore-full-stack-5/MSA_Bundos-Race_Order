@@ -1,10 +1,6 @@
 package com.bundosRace.order.controller;
 
-import com.bundosRace.order.config.utils.JwtTokenUtils;
-import com.bundosRace.order.config.utils.TokenInfo;
 import com.bundosRace.order.domain.dto.request.CreateOrderRequest;
-import com.bundosRace.order.domain.dto.request.CreateProductRequest;
-import com.bundosRace.order.domain.dto.request.SellProductsRequest;
 import com.bundosRace.order.domain.dto.request.UpdateOrderDTO;
 import com.bundosRace.order.domain.dto.response.ReadOrderDTO;
 import com.bundosRace.order.domain.entity.User;
@@ -19,32 +15,23 @@ import java.util.List;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
     private final OrderService orderService;
-    private final JwtTokenUtils jwtTokenUtils;
 
     @GetMapping("/test")
     public String test() {
         return "Hello World";
     }
 
-    @PostMapping("/user")
-    public String token(
-            @RequestBody User user
-    ) {
-//        User user = new User(UUID.fromString("00000000-0000-0000-0000-" +
-//                "000000000001"), "asd", "1234");
-        String token = jwtTokenUtils.generateToken(user);
+//    @PostMapping("/user")
+//    public String token(
+//            @RequestBody User user
+//    ) {
+////        User user = new User(UUID.fromString("00000000-0000-0000-0000-" +
+////                "000000000001"), "asd", "1234");
+//        String token = jwtTokenUtils.generateToken(user);
+//
+//        return token;
+//    }
 
-        return token;
-    }
-
-    @GetMapping("/user/order")
-    public List<ReadOrderDTO> getAllOrder(
-            @RequestHeader("Authorization") String userInfoToken
-    ) {
-        String token = userInfoToken.substring(7);
-        TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
-        return orderService.getAllOrderToUser(tokenInfo);
-    }
 
 //    @GetMapping("user/order/{id}")
 //    public ReadOrderDTO findOneOrderFromUser(
@@ -55,35 +42,35 @@ public class OrderController {
 //        TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
 //        return orderService.getOneOrderFromUser(tokenInfo, id);
 //    }
+    @GetMapping("/user/order")
+    public List<ReadOrderDTO> getAllOrder(
+            @RequestParam("token") String token
+    ) {
+        return orderService.getAllOrderToUser(token);
+    }
 
     @PostMapping("/create")
     public void saveOrder(
             @RequestBody CreateOrderRequest req,
-            @RequestHeader("Authorization") String userInfoToken
+            @RequestParam("token") String token
     ) {
-        String token = userInfoToken.substring(7);
-        TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
-        orderService.createOrder(tokenInfo, req);
+        orderService.createOrder(token, req);
     }
 
     @PutMapping("/update/{id}")
     public void updateOrder(
             @PathVariable("id") Long id,
             @RequestBody UpdateOrderDTO req,
-            @RequestHeader("Authorization") String userInfoToken
+            @RequestParam("token") String token
     ) {
-        String token = userInfoToken.substring(7);
-        TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
-        orderService.updateOrder(tokenInfo, id, req);
+        orderService.updateOrder(token, id, req);
     }
 
     @DeleteMapping("delete/{id}")
     public void deleteOrder(
             @PathVariable("id") Long id,
-            @RequestHeader("Authorization") String userInfoToken
+            @RequestParam("token") String token
     ) {
-        String token = userInfoToken.substring(7);
-        TokenInfo tokenInfo = jwtTokenUtils.parseInfo(token);
-        orderService.deleteOrder(tokenInfo, id);
+        orderService.deleteOrder(token, id);
     }
 }
